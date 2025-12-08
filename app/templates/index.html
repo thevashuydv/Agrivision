@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plant Disease Detector</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>Plant Disease Detector</h1>
+      <p class="subtitle">Upload a leaf photo — get disease, confidence, description & treatment.</p>
+    </header>
+
+    <section class="card upload-card">
+      <div id="dropzone" class="dropzone">
+        <input id="fileInput" type="file" accept="image/*" hidden>
+        <div class="drop-content">
+          <svg class="icon" width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M12 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 6l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 21H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <p id="dropText">Drag & drop a leaf image here, or <button id="browseBtn" class="link-btn">browse</button></p>
+          <p class="hint">Best results with a clear single leaf on a plain background</p>
+        </div>
+      </div>
+
+      <div id="preview" class="preview hidden">
+        <img id="previewImg" alt="preview">
+        <div class="preview-actions">
+          <button id="analyzeBtn" class="primary">Analyze</button>
+          <button id="removeBtn" class="secondary">Remove</button>
+        </div>
+      </div>
+
+      <div id="status" class="status hidden">
+        <div class="loader"></div>
+        <div id="statusText">Analyzing...</div>
+      </div>
+
+      <div id="result" class="result hidden"></div>
+    </section>
+
+    <footer class="footer">
+      <small>Model trained on PlantVillage • EfficientNet-B0 • For leaf images only</small>
+    </footer>
+  </main>
+
+<script>
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const browseBtn = document.getElementById('browseBtn');
+const preview = document.getElementById('preview');
+const previewImg = document.getElementById('previewImg');
+const removeBtn = document.getElementById('removeBtn');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const status = document.getElementById('status');
+const statusText = document.getElementById('statusText');
+const result = document.getElementById('result');
+const dropText = document.getElementById('dropText');
+
+function show(el){ el.classList.remove('hidden'); }
+function hide(el){ el.classList.add('hidden'); }
+
+browseBtn.addEventListener('click', ()=> fileInput.click());
+dropzone.addEventListener('click', ()=> fileInput.click());
+
+fileInput.addEventListener('change', (e)=> {
+  const f = e.target.files[0];
+  if(!f) return;
+  showPreview(f);
+});
+
+dropzone.addEventListener('dragover', (e)=> { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', (e)=> {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if(!f) return;
+  fileInput.files = e.dataTransfer.files;
+  showPreview(f);
+});
+
+function showPreview(file){
+  const url = URL.createObjectURL(file);
+  previewImg.src = url;
+  show(preview);
+  hide(dropzone);
+  hide(result);
+}
+
+removeBtn.addEventListener('click', ()=> {
+  fileInput.value = '';
+  previewImg.src = '';
+  hide(preview);
+  show(dropzone);
+  hide(status);
+  hide(result);
+});
+
+async function analyze(){
+  const f = fileInput.files[0];
+  if(!f) return;
+  hide(preview);
+  show(status);
+  statusText.innerText = 'Uploading & analyzing...';
+  result.innerHTML = '';
+
+  const fd = new FormData();
+  fd.append('file', f);
+
+  try {
+    const res = await fetch('/api/predict', { method: 'POST', body: fd });
+    const j = await res.json();
+    if(res.ok && j.result){
+      renderResult(j.result);
+    } else {
+      let msg = j.message || 'Prediction failed';
+      result.innerHTML = `<div class="error">Error: ${msg}</div>`;
+      show(result);
+    }
+  } catch (err){
+    result.innerHTML = `<div class="error">Network or server error.</div>`;
+    show(result);
+  } finally {
+    hide(status);
+  }
+}
+
+function renderResult(r){
+  const html = `
+    <div class="result-card">
+      <div class="row">
+        <div class="col image">
+          <img src="${previewImg.src}" alt="uploaded" />
+        </div>
+        <div class="col info">
+          <h2>${escapeHtml(r.class)}</h2>
+          <p class="conf">${r.confidence.toFixed(2)}% confident</p>
+          <h3>Description</h3>
+          <p>${escapeHtml(r.description)}</p>
+          <h3>Treatment</h3>
+          <p>${escapeHtml(r.treatment)}</p>
+        </div>
+      </div>
+      <div class="actions"><button id="analyzeMore" class="primary">Analyze another</button></div>
+    </div>`;
+  result.innerHTML = html;
+  show(result);
+
+  document.getElementById('analyzeMore').addEventListener('click', ()=>{
+    fileInput.value = '';
+    previewImg.src = '';
+    hide(result);
+    hide(preview);
+    show(dropzone);
+  });
+}
+
+function escapeHtml(s){
+  if(!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+analyzeBtn.addEventListener('click', analyze);
+</script>
+</body>
+</html>

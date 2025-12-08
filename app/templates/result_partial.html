@@ -1,0 +1,16 @@
+<!-- app/templates/result_partial.html -->
+<div class="result-card">
+  <div class="row">
+    <div class="col image">
+      <img src="{{ request.client.host }}" alt="uploaded" />
+    </div>
+    <div class="col info">
+      <h2>{{ r.class }}</h2>
+      <p class="conf">{{ r.confidence }}% confident</p>
+      <h3>Description</h3>
+      <p>{{ r.description }}</p>
+      <h3>Treatment</h3>
+      <p>{{ r.treatment }}</p>
+    </div>
+  </div>
+</div>
