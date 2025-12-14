@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="AgriVision - AI-powered plant disease detection system with instant diagnosis and treatment recommendations" />
+  <meta name="keywords" content="plant disease detection, AI agriculture, plant health, disease diagnosis, agricultural technology" />
+  <meta name="author" content="AgriVision" />
+  <title>{% block title %}AgriVision{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  {% if clerk_publishable_key %}
+  <script>
+    // Set publishable key in multiple places to ensure Clerk can find it
+    const clerkKey = "{{ clerk_publishable_key }}";
+    window.CLERK_PUBLISHABLE_KEY = clerkKey;
+    window.__clerk_publishable_key = clerkKey;
+    
+    // Suppress Clerk's auto-initialization errors - we'll initialize manually
+    window.addEventListener('error', function(e) {
+      if (e.message && e.message.includes('Missing publishableKey') && e.message.includes('@clerk/clerk-js')) {
+        e.preventDefault();
+        console.log('Suppressed Clerk auto-init error - will initialize manually');
+        return true;
+      }
+    }, true);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+  {% endif %}
+</head>
+<body>
+  {% block content %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>
+

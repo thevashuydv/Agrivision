@@ -1,0 +1,681 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AgriVision{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <!-- Top Navbar -->
+  <nav class="top-navbar">
+    <div class="top-navbar-content">
+      <div class="top-navbar-brand">
+        <span class="brand-icon">🌿</span>
+        <span class="brand-text">AgriVision</span>
+      </div>
+      <div class="top-navbar-right">
+        <div class="language-selector">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          English
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        {% if user %}
+        <div class="user-info">
+          <span class="user-name">{{ user.get('first_name', 'User') }}</span>
+          <button id="signOutBtn" class="btn-signout">Sign Out</button>
+        </div>
+        {% else %}
+        <a href="/login" class="btn-login">Sign In</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-layout">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-item active" data-section="home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Home</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="weather-lens">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="9" y1="11" x2="15" y2="11"></line>
+          </svg>
+          <span>Weather Lens</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="crop-tracker">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span>Crop Tracker</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="soil-scope">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+          <span>Soil Scope</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="plant-profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span>Plant Profile</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="crop-selector">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span>Crop Selector</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="soil-insight">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+          <span>Soil Insight</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="fertilizer-guide">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+          <span>Fertilizer Guide</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="crop-journey">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Crop Journey</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="speech2text">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+          <span>Speech2Text</span>
+        </a>
+        <a href="#" class="sidebar-item" data-section="disease-detection">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span>Disease Detection</span>
+          <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Home Section -->
+      <section id="home" class="dashboard-section active">
+        <div class="hero-section">
+          <h1 class="hero-title">AgriVision: Cultivating Tomorrow</h1>
+          <p class="hero-subtitle">Empowering farmers with cutting-edge AI solutions</p>
+          <button class="hero-button">Explore AgriVision</button>
+        </div>
+      </section>
+
+      <!-- Disease Detection Section -->
+      <section id="disease-detection" class="dashboard-section">
+        <div class="section-header">
+          <h1>Plant Disease Detection</h1>
+          <p class="section-subtitle">Upload a leaf photo to get instant AI-powered disease diagnosis with detailed analysis and personalized treatment recommendations</p>
+        </div>
+
+        <div class="card upload-card">
+          <div id="dropzone" class="dropzone">
+            <input id="fileInput" type="file" accept="image/*" hidden>
+            <div class="drop-content">
+              <div class="upload-icon-wrapper">
+                <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+              </div>
+              <p id="dropText" class="drop-text">Drag & drop your leaf image here</p>
+              <p class="drop-or">or</p>
+              <button id="browseBtn" class="browse-btn" type="button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Browse Files
+              </button>
+              <p class="hint">📸 Tip: Best results with a clear, well-lit photo of a single leaf</p>
+            </div>
+          </div>
+
+          <div id="preview" class="preview hidden">
+            <div class="preview-header">
+              <h3 class="preview-title">📷 Image Preview</h3>
+            </div>
+            <div class="preview-image-wrapper">
+              <img id="previewImg" alt="Preview of uploaded leaf image" src="">
+            </div>
+            <div class="preview-actions">
+              <button id="analyzeBtn" class="primary" type="button" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+                Analyze Disease
+              </button>
+              <button id="removeBtn" class="secondary" type="button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Remove
+              </button>
+            </div>
+          </div>
+
+          <div id="status" class="status hidden">
+            <div class="status-content">
+              <div class="loader"></div>
+              <div class="status-info">
+                <div id="statusText" class="status-text">Analyzing...</div>
+                <div class="status-subtext">Please wait while we process your image</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="result" class="result hidden"></div>
+        </div>
+      </section>
+
+      <!-- Fertilizer Guide Section -->
+      <section id="fertilizer-guide" class="dashboard-section">
+        <div class="section-header">
+          <h1>Fertilizer Recommendation System</h1>
+          <p class="section-subtitle">Get personalized fertilizer recommendations based on your soil conditions and crop requirements</p>
+        </div>
+
+        <div class="card fertilizer-form-card">
+          <form id="fertilizerForm" class="fertilizer-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="temperature">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+                  </svg>
+                  Temperature (°C)
+                </label>
+                <input type="number" id="temperature" name="temperature" step="0.1" placeholder="Enter temperature" required>
+              </div>
+
+              <div class="form-group">
+                <label for="humidity">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                  </svg>
+                  Humidity (%)
+                </label>
+                <input type="number" id="humidity" name="humidity" step="0.1" min="0" max="100" placeholder="Enter humidity" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="moisture">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                  </svg>
+                  Moisture (%)
+                </label>
+                <input type="number" id="moisture" name="moisture" step="0.1" min="0" max="100" placeholder="Enter moisture" required>
+              </div>
+
+              <div class="form-group">
+                <label for="soilType">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  Select Soil Type
+                </label>
+                <select id="soilType" name="soilType" required>
+                  <option value="">Select soil type</option>
+                  <option value="Sandy">Sandy</option>
+                  <option value="Clay">Clay</option>
+                  <option value="Loamy">Loamy</option>
+                  <option value="Silty">Silty</option>
+                  <option value="Peaty">Peaty</option>
+                  <option value="Chalky">Chalky</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cropType">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  Crop Type
+                </label>
+                <input type="text" id="cropType" name="cropType" placeholder="e.g., Tomato, Wheat, Rice" required>
+              </div>
+
+              <div class="form-group">
+                <label for="nitrogen">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  </svg>
+                  Nitrogen (kg/ha)
+                </label>
+                <input type="number" id="nitrogen" name="nitrogen" step="0.1" min="0" placeholder="Enter nitrogen level" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phosphorous">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  </svg>
+                  Phosphorous (kg/ha)
+                </label>
+                <input type="number" id="phosphorous" name="phosphorous" step="0.1" min="0" placeholder="Enter phosphorous level" required>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary submit-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Get Fertilizer Recommendations
+              </button>
+            </div>
+          </form>
+
+          <div id="fertilizerStatus" class="status hidden">
+            <div class="status-content">
+              <div class="loader"></div>
+              <div class="status-info">
+                <div class="status-text">Analyzing your requirements...</div>
+                <div class="status-subtext">Please wait while we generate personalized recommendations</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="fertilizerResult" class="fertilizer-result hidden"></div>
+        </div>
+      </section>
+
+      <!-- Coming Soon Sections -->
+      <section id="weather-lens" class="dashboard-section">
+        <div class="coming-soon-container">
+          <div class="coming-soon-icon">🌤️</div>
+          <h1 class="coming-soon-title">Weather Lens</h1>
+          <p class="coming-soon-subtitle">Real-time weather monitoring and forecasting for your farm</p>
+          <div class="coming-soon-features">
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path>
+              </svg>
+              <span>Real-time weather data</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              <span>7-day weather forecasts</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Weather alerts & notifications</span>
+            </div>
+          </div>
+          <div class="coming-soon-badge">Coming Soon</div>
+        </div>
+      </section>
+
+      <section id="crop-tracker" class="dashboard-section">
+        <div class="coming-soon-container">
+          <div class="coming-soon-icon">📊</div>
+          <h1 class="coming-soon-title">Crop Tracker</h1>
+          <p class="coming-soon-subtitle">Monitor and track your crop growth throughout the season</p>
+          <div class="coming-soon-features">
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <span>Growth stage tracking</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="20" x2="12" y2="10"></line>
+                <line x1="18" y1="20" x2="18" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="16"></line>
+              </svg>
+              <span>Yield predictions</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Performance analytics</span>
+            </div>
+          </div>
+          <div class="coming-soon-badge">Coming Soon</div>
+        </div>
+      </section>
+
+      <section id="soil-scope" class="dashboard-section">
+        <div class="coming-soon-container">
+          <div class="coming-soon-icon">🌱</div>
+          <h1 class="coming-soon-title">Soil Scope</h1>
+          <p class="coming-soon-subtitle">Comprehensive soil analysis and health monitoring</p>
+          <div class="coming-soon-features">
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+              <span>Soil nutrient analysis</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="2" x2="12" y2="22"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+              </svg>
+              <span>pH level monitoring</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              </svg>
+              <span>Soil health recommendations</span>
+            </div>
+          </div>
+          <div class="coming-soon-badge">Coming Soon</div>
+        </div>
+      </section>
+
+      <section id="plant-profile" class="dashboard-section">
+        <div class="coming-soon-container">
+          <div class="coming-soon-icon">🌿</div>
+          <h1 class="coming-soon-title">Plant Profile</h1>
+          <p class="coming-soon-subtitle">Detailed information and care guides for different plant species</p>
+          <div class="coming-soon-features">
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>Plant database & encyclopedia</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <span>Growth requirements</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Care instructions & tips</span>
+            </div>
+          </div>
+          <div class="coming-soon-badge">Coming Soon</div>
+        </div>
+      </section>
+
+      <section id="crop-selector" class="dashboard-section">
+        <div class="coming-soon-container">
+          <div class="coming-soon-icon">🌾</div>
+          <h1 class="coming-soon-title">Crop Selector</h1>
+          <p class="coming-soon-subtitle">Find the best crops for your soil and climate conditions</p>
+          <div class="coming-soon-features">
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="M21 21l-4.35-4.35"></path>
+              </svg>
+              <span>Smart crop recommendations</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              <span>Climate compatibility analysis</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              </svg>
+              <span>Profitability estimates</span>
+            </div>
+          </div>
+          <div class="coming-soon-badge">Coming Soon</div>
+        </div>
+      </section>
+
+      <section id="soil-insight" class="dashboard-section">
+        <div class="coming-soon-container">
+          <div class="coming-soon-icon">🔬</div>
+          <h1 class="coming-soon-title">Soil Insight</h1>
+          <p class="coming-soon-subtitle">Advanced soil analysis with AI-powered insights</p>
+          <div class="coming-soon-features">
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              </svg>
+              <span>Deep soil composition analysis</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="20" x2="12" y2="10"></line>
+                <line x1="18" y1="20" x2="18" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="16"></line>
+              </svg>
+              <span>Historical soil data tracking</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>AI-powered recommendations</span>
+            </div>
+          </div>
+          <div class="coming-soon-badge">Coming Soon</div>
+        </div>
+      </section>
+
+      <section id="crop-journey" class="dashboard-section">
+        <div class="coming-soon-container">
+          <div class="coming-soon-icon">🗺️</div>
+          <h1 class="coming-soon-title">Crop Journey</h1>
+          <p class="coming-soon-subtitle">Track your crops from planting to harvest with location-based insights</p>
+          <div class="coming-soon-features">
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>GPS-based field mapping</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              <span>Growth timeline visualization</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <span>Field activity logging</span>
+            </div>
+          </div>
+          <div class="coming-soon-badge">Coming Soon</div>
+        </div>
+      </section>
+
+      <section id="speech2text" class="dashboard-section">
+        <div class="coming-soon-container">
+          <div class="coming-soon-icon">🎤</div>
+          <h1 class="coming-soon-title">Speech2Text</h1>
+          <p class="coming-soon-subtitle">Voice commands and voice-to-text for hands-free farm management</p>
+          <div class="coming-soon-features">
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+              <span>Voice command recognition</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <span>Voice-to-text notes</span>
+            </div>
+            <div class="feature-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Multilingual support</span>
+            </div>
+          </div>
+          <div class="coming-soon-badge">Coming Soon</div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+{% if clerk_publishable_key %}
+// Initialize Clerk for dashboard
+(function() {
+  const publishableKey = "{{ clerk_publishable_key }}";
+  let clerkInstance = null;
+  
+  function initializeClerk() {
+    if (typeof window.Clerk === 'undefined') {
+      setTimeout(initializeClerk, 200);
+      return;
+    }
+    
+    try {
+      clerkInstance = new window.Clerk(publishableKey);
+      
+      clerkInstance.load().then(() => {
+        console.log('Clerk loaded in dashboard');
+        
+        if (!clerkInstance.user) {
+          window.location.href = '/login';
+          return;
+        }
+        
+        const signOutBtn = document.getElementById('signOutBtn');
+        if (signOutBtn) {
+          signOutBtn.addEventListener('click', async () => {
+            try {
+              await clerkInstance.signOut();
+              window.location.href = '/login';
+            } catch (error) {
+              console.error('Sign out error:', error);
+            }
+          });
+        }
+        
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement && clerkInstance.user) {
+          const firstName = clerkInstance.user.firstName || clerkInstance.user.username || 'User';
+          userNameElement.textContent = firstName;
+        }
+        
+      }).catch(err => {
+        console.error('Clerk initialization error:', err);
+      });
+    } catch (error) {
+      console.error('Error creating Clerk instance:', error);
+    }
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeClerk);
+  } else {
+    initializeClerk();
+  }
+})();
+{% endif %}
+
+// Sidebar navigation
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebarItems = document.querySelectorAll('.sidebar-item');
+  const sections = document.querySelectorAll('.dashboard-section');
+  
+  sidebarItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const sectionId = item.getAttribute('data-section');
+      
+      // Update active sidebar item
+      sidebarItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      
+      // Show/hide sections
+      sections.forEach(s => s.classList.remove('active'));
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+    });
+  });
+  
+  // Hero button click
+  const heroButton = document.querySelector('.hero-button');
+  if (heroButton) {
+    heroButton.addEventListener('click', () => {
+      const diseaseSection = document.getElementById('disease-detection');
+      const diseaseItem = document.querySelector('[data-section="disease-detection"]');
+      if (diseaseSection && diseaseItem) {
+        sidebarItems.forEach(i => i.classList.remove('active'));
+        diseaseItem.classList.add('active');
+        sections.forEach(s => s.classList.remove('active'));
+        diseaseSection.classList.add('active');
+      }
+    });
+  }
+});
+</script>
+
+<!-- Include the disease detection script -->
+<script src="/static/js/disease-detection.js"></script>
+<!-- Include the fertilizer guide script -->
+<script src="/static/js/fertilizer-guide.js"></script>
+{% endblock %}

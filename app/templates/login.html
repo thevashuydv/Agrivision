@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - AgriVision{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-icon">🌿</div>
+      <h1>AgriVision</h1>
+      <p>Sign in to access your personalized plant disease detection dashboard</p>
+    </div>
+    
+    {% if clerk_publishable_key %}
+    <div id="clerk-sign-in" style="min-height: 400px; width: 100%;"></div>
+    <div id="clerk-loading" style="text-align: center; padding: 20px; color: #6b7280;">
+      Loading sign-in form...
+    </div>
+    {% else %}
+    <div class="login-fallback">
+      <p>Clerk authentication is not configured.</p>
+      <a href="/" class="btn-primary">Continue to Dashboard</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if clerk_publishable_key %}
+<script>
+  (function() {
+    const publishableKey = "{{ clerk_publishable_key }}";
+    const signInElement = document.getElementById('clerk-sign-in');
+    const loadingElement = document.getElementById('clerk-loading');
+    let clerkInstance = null;
+    let mounted = false;
+    
+    console.log('Starting Clerk initialization...');
+    console.log('Publishable key:', publishableKey ? publishableKey.substring(0, 25) + '...' : 'MISSING');
+    
+    // Function to initialize Clerk
+    function initializeClerk() {
+      if (mounted) return;
+      
+      // Check if Clerk is available
+      if (typeof window.Clerk === 'undefined') {
+        console.log('Waiting for Clerk...');
+        return false;
+      }
+      
+      try {
+        console.log('Clerk available, creating instance...');
+        
+        if (!publishableKey || !publishableKey.trim()) {
+          throw new Error('Publishable key is missing');
+        }
+        
+        // Get Clerk constructor
+        const ClerkConstructor = typeof window.Clerk === 'function' 
+          ? window.Clerk 
+          : (window.Clerk?.default || window.Clerk);
+        
+        if (!ClerkConstructor || typeof ClerkConstructor !== 'function') {
+          throw new Error('Clerk constructor not found');
+        }
+        
+        // Create new instance with the key
+        console.log('Creating Clerk instance...');
+        clerkInstance = new ClerkConstructor(publishableKey);
+        console.log('Clerk instance created');
+        
+        // Load if not already loaded
+        const loadPromise = clerkInstance.loaded ? Promise.resolve() : clerkInstance.load();
+        
+        return loadPromise.then(() => {
+          console.log('✅ Clerk ready');
+          
+          if (clerkInstance.user) {
+            console.log('Already signed in, redirecting...');
+            window.location.href = '/';
+            return;
+          }
+          
+          if (loadingElement) {
+            loadingElement.style.display = 'none';
+          }
+          
+          // Mount sign-in
+          if (signInElement && clerkInstance.components && clerkInstance.components.signIn) {
+            try {
+              console.log('Mounting sign-in component...');
+              const signIn = clerkInstance.components.signIn({
+                appearance: {
+                  elements: {
+                    rootBox: { width: '100%' },
+                    card: {
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                      borderRadius: '12px'
+                    }
+                  }
+                }
+              });
+              
+              signIn.mount('#clerk-sign-in');
+              mounted = true;
+              console.log('✅ Sign-in mounted!');
+            } catch (e) {
+              console.error('Mount error:', e);
+              if (loadingElement) {
+                loadingElement.innerHTML = `<div class="error"><p>Mount failed: ${e.message}</p></div>`;
+              }
+            }
+          }
+          
+          // Listen for sign-in
+          if (clerkInstance.addListener) {
+            clerkInstance.addListener((state) => {
+              if (state.user) {
+                setTimeout(() => window.location.href = '/', 500);
+              }
+            });
+          }
+        }).catch(error => {
+          console.error('Load error:', error);
+          if (loadingElement) {
+            loadingElement.innerHTML = `<div class="error"><p>${error.message}</p><button onclick="location.reload()" class="btn-primary" style="margin-top: 16px;">Retry</button></div>`;
+          }
+        });
+        
+      } catch (error) {
+        console.error('Init error:', error);
+        if (loadingElement) {
+          loadingElement.innerHTML = `<div class="error"><p>${error.message}</p><button onclick="location.reload()" class="btn-primary" style="margin-top: 16px;">Retry</button></div>`;
+        }
+        return false;
+      }
+    }
+    
+    // Wait and initialize - ensure Clerk script is fully loaded
+    let initAttempts = 0;
+    const maxAttempts = 15;
+    
+    function waitAndInit() {
+      initAttempts++;
+      
+      // Check if Clerk is available
+      const ClerkAvailable = typeof window.Clerk !== 'undefined' && 
+                             (typeof window.Clerk === 'function' || window.Clerk.default);
+      
+      if (ClerkAvailable) {
+        console.log('Clerk is available, initializing...');
+        const result = initializeClerk();
+        if (result === false && !mounted && initAttempts < maxAttempts) {
+          setTimeout(waitAndInit, 500);
+        } else if (!mounted && initAttempts >= maxAttempts) {
+          console.error('Failed to initialize after max attempts');
+          if (loadingElement) {
+            loadingElement.innerHTML = '<div class="error">Failed to initialize Clerk. Please refresh the page.</div>';
+          }
+        }
+      } else {
+        if (initAttempts < maxAttempts) {
+          console.log(`Waiting for Clerk... (attempt ${initAttempts}/${maxAttempts})`);
+          setTimeout(waitAndInit, 400);
+        } else {
+          console.error('Clerk never became available');
+          if (loadingElement) {
+            loadingElement.innerHTML = '<div class="error">Clerk authentication script failed to load. Please refresh the page.</div>';
+          }
+        }
+      }
+    }
+    
+    // Start initialization after ensuring script has time to load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        // Wait 2 seconds to ensure Clerk script is fully loaded and parsed
+        setTimeout(waitAndInit, 2000);
+      });
+    } else {
+      setTimeout(waitAndInit, 2000);
+    }
+    
+  })();
+</script>
+{% endif %}
+{% endblock %}
+

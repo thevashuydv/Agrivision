@@ -3,37 +3,77 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Plant Disease Detector</title>
+  <meta name="description" content="AI-powered plant disease detection from leaf images" />
+  <title>AgriVision</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
   <main class="container">
     <header class="header">
-      <h1>Plant Disease Detector</h1>
-      <p class="subtitle">Upload a leaf photo — get disease, confidence, description & treatment.</p>
+      <div class="header-icon">🌿</div>
+      <h1>AgriVision</h1>
+      <p class="subtitle">Upload a leaf photo to get instant disease diagnosis, confidence score, and treatment recommendations</p>
     </header>
 
     <section class="card upload-card">
       <div id="dropzone" class="dropzone">
         <input id="fileInput" type="file" accept="image/*" hidden>
         <div class="drop-content">
-          <svg class="icon" width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M12 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 6l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 21H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <p id="dropText">Drag & drop a leaf image here, or <button id="browseBtn" class="link-btn">browse</button></p>
-          <p class="hint">Best results with a clear single leaf on a plain background</p>
+          <div class="upload-icon-wrapper">
+            <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <p id="dropText" class="drop-text">Drag & drop your leaf image here</p>
+          <p class="drop-or">or</p>
+          <button id="browseBtn" class="browse-btn" type="button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Browse Files
+          </button>
+          <p class="hint">📸 Tip: Best results with a clear, well-lit photo of a single leaf</p>
         </div>
       </div>
 
       <div id="preview" class="preview hidden">
-        <img id="previewImg" alt="preview">
+        <div class="preview-header">
+          <h3 class="preview-title">📷 Image Preview</h3>
+        </div>
+        <div class="preview-image-wrapper">
+          <img id="previewImg" alt="Preview of uploaded leaf image" src="">
+        </div>
         <div class="preview-actions">
-          <button id="analyzeBtn" class="primary">Analyze</button>
-          <button id="removeBtn" class="secondary">Remove</button>
+          <button id="analyzeBtn" class="primary" type="button" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            Analyze Disease
+          </button>
+          <button id="removeBtn" class="secondary" type="button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Remove
+          </button>
         </div>
       </div>
 
       <div id="status" class="status hidden">
-        <div class="loader"></div>
-        <div id="statusText">Analyzing...</div>
+        <div class="status-content">
+          <div class="loader"></div>
+          <div class="status-info">
+            <div id="statusText" class="status-text">Analyzing...</div>
+            <div class="status-subtext">Please wait while we process your image</div>
+          </div>
+        </div>
       </div>
 
       <div id="result" class="result hidden"></div>
@@ -60,12 +100,23 @@ const dropText = document.getElementById('dropText');
 function show(el){ el.classList.remove('hidden'); }
 function hide(el){ el.classList.add('hidden'); }
 
+// Initialize: ensure everything starts in correct state
+hide(status);
+hide(result);
+hide(preview);
+analyzeBtn.disabled = true;
+
 browseBtn.addEventListener('click', ()=> fileInput.click());
 dropzone.addEventListener('click', ()=> fileInput.click());
 
 fileInput.addEventListener('change', (e)=> {
   const f = e.target.files[0];
   if(!f) return;
+  if(!f.type.startsWith('image/')){
+    alert('Please select an image file');
+    fileInput.value = '';
+    return;
+  }
   showPreview(f);
 });
 
@@ -76,34 +127,77 @@ dropzone.addEventListener('drop', (e)=> {
   dropzone.classList.remove('drag');
   const f = e.dataTransfer.files[0];
   if(!f) return;
+  if(!f.type.startsWith('image/')){
+    alert('Please drop an image file');
+    return;
+  }
   fileInput.files = e.dataTransfer.files;
   showPreview(f);
 });
 
 function showPreview(file){
+  if(!file || !file.type || !file.type.startsWith('image/')){
+    alert('Please select an image file');
+    hide(status);
+    hide(preview);
+    show(dropzone);
+    analyzeBtn.disabled = true;
+    return;
+  }
+  
+  // Clean up previous object URL to prevent memory leaks
+  if(previewImg.src && previewImg.src.startsWith('blob:')){
+    URL.revokeObjectURL(previewImg.src);
+  }
+  
   const url = URL.createObjectURL(file);
   previewImg.src = url;
-  show(preview);
-  hide(dropzone);
-  hide(result);
+  
+  // Show preview and enable button after image loads
+  previewImg.onload = () => {
+    show(preview);
+    hide(dropzone);
+    hide(result);
+    hide(status);
+    analyzeBtn.disabled = false; // Enable button when image is loaded
+  };
+  
+  previewImg.onerror = () => {
+    alert('Failed to load image. Please try another file.');
+    hide(status);
+    hide(preview);
+    show(dropzone);
+    analyzeBtn.disabled = true;
+    fileInput.value = '';
+  };
 }
 
 removeBtn.addEventListener('click', ()=> {
   fileInput.value = '';
+  if(previewImg.src && previewImg.src.startsWith('blob:')){
+    URL.revokeObjectURL(previewImg.src);
+  }
   previewImg.src = '';
   hide(preview);
   show(dropzone);
   hide(status);
   hide(result);
+  analyzeBtn.disabled = true; // Disable button when image is removed
 });
 
 async function analyze(){
   const f = fileInput.files[0];
-  if(!f) return;
-  hide(preview);
+  if(!f || !f.type || !f.type.startsWith('image/')){
+    hide(status);
+    return;
+  }
+  
+  // Disable button and show analyzing status
+  analyzeBtn.disabled = true;
   show(status);
-  statusText.innerText = 'Uploading & analyzing...';
-  result.innerHTML = '';
+  hide(result);
+  statusText.innerText = 'Analyzing your image...';
+  // Keep preview visible during analysis
 
   const fd = new FormData();
   fd.append('file', f);
@@ -112,47 +206,125 @@ async function analyze(){
     const res = await fetch('/api/predict', { method: 'POST', body: fd });
     const j = await res.json();
     if(res.ok && j.result){
+      hide(status); // Hide status before showing results
       renderResult(j.result);
+      analyzeBtn.disabled = false; // Re-enable button after showing results
     } else {
-      let msg = j.message || 'Prediction failed';
-      result.innerHTML = `<div class="error">Error: ${msg}</div>`;
+      let msg = j.message || j.error || 'Prediction failed';
+      hide(status);
+      result.innerHTML = `<div class="error">Error: ${escapeHtml(msg)}</div>`;
       show(result);
+      analyzeBtn.disabled = false; // Re-enable on error
     }
   } catch (err){
-    result.innerHTML = `<div class="error">Network or server error.</div>`;
-    show(result);
-  } finally {
     hide(status);
+    result.innerHTML = `<div class="error">Network or server error. Please check your connection and try again.</div>`;
+    show(result);
+    analyzeBtn.disabled = false; // Re-enable on error
   }
 }
 
 function renderResult(r){
+  const className = r.class || 'Unknown';
+  const confidence = typeof r.confidence === 'number' ? r.confidence.toFixed(2) : r.confidence || '0.00';
+  const description = r.description || 'No description available.';
+  const treatment = r.treatment || 'No treatment information available.';
+  
+  // Format disease name (remove underscores, capitalize properly)
+  const formattedName = className
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, l => l.toUpperCase());
+  
+  // Determine confidence color
+  const confNum = parseFloat(confidence);
+  let confColor = '#dc2626'; // red
+  let confLabel = 'Low';
+  if(confNum >= 80) {
+    confColor = '#16a34a'; // green
+    confLabel = 'High';
+  } else if(confNum >= 60) {
+    confColor = '#f59e0b'; // orange
+    confLabel = 'Medium';
+  }
+  
+  // Ensure status is completely hidden before showing results
+  hide(status);
+  
   const html = `
     <div class="result-card">
+      <div class="result-header">
+        <div class="result-icon">🔍</div>
+        <h2 class="result-title">Analysis Results</h2>
+      </div>
       <div class="row">
         <div class="col image">
-          <img src="${previewImg.src}" alt="uploaded" />
+          <div class="image-wrapper">
+            <img src="${previewImg.src}" alt="uploaded leaf" />
+          </div>
         </div>
         <div class="col info">
-          <h2>${escapeHtml(r.class)}</h2>
-          <p class="conf">${r.confidence.toFixed(2)}% confident</p>
-          <h3>Description</h3>
-          <p>${escapeHtml(r.description)}</p>
-          <h3>Treatment</h3>
-          <p>${escapeHtml(r.treatment)}</p>
+          <div class="disease-name">
+            <span class="disease-label">Disease Detected:</span>
+            <h3>${escapeHtml(formattedName)}</h3>
+          </div>
+          <div class="confidence-badge" style="--conf-color: ${confColor}">
+            <span class="conf-label">Confidence</span>
+            <span class="conf-value">${confidence}%</span>
+            <span class="conf-level">${confLabel}</span>
+          </div>
+          <div class="info-section">
+            <div class="section-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <h4>Description</h4>
+            </div>
+            <p>${escapeHtml(description)}</p>
+          </div>
+          <div class="info-section">
+            <div class="section-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <h4>Treatment</h4>
+            </div>
+            ${formatTreatmentAsList(treatment)}
+          </div>
         </div>
       </div>
-      <div class="actions"><button id="analyzeMore" class="primary">Analyze another</button></div>
+      <div class="actions">
+        <button id="analyzeMore" class="primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          Analyze Another Image
+        </button>
+      </div>
     </div>`;
   result.innerHTML = html;
   show(result);
 
-  document.getElementById('analyzeMore').addEventListener('click', ()=>{
+  // Clean up old event listener by removing and re-adding
+  const analyzeMoreBtn = document.getElementById('analyzeMore');
+  const newBtn = analyzeMoreBtn.cloneNode(true);
+  analyzeMoreBtn.parentNode.replaceChild(newBtn, analyzeMoreBtn);
+  
+  newBtn.addEventListener('click', ()=>{
     fileInput.value = '';
+    if(previewImg.src && previewImg.src.startsWith('blob:')){
+      URL.revokeObjectURL(previewImg.src);
+    }
     previewImg.src = '';
     hide(result);
     hide(preview);
+    hide(status);
     show(dropzone);
+    analyzeBtn.disabled = true; // Disable button when resetting
   });
 }
 
@@ -161,7 +333,99 @@ function escapeHtml(s){
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-analyzeBtn.addEventListener('click', analyze);
+function formatTreatmentAsList(treatmentText){
+  if(!treatmentText) return '<p>No treatment information available.</p>';
+  
+  // Check if it contains numbered list pattern (1., 2., 3., etc.)
+  const numberedPattern = /\d+\.\s+/;
+  const hasNumberedList = numberedPattern.test(treatmentText);
+  
+  // Check for bullet points
+  const bulletPattern = /^[-*•]\s/m;
+  const hasBulletList = bulletPattern.test(treatmentText);
+  
+  let items = [];
+  
+  if(hasNumberedList){
+    // Split by numbered items: "1. ", "2. ", "3. ", etc.
+    // Use regex to split while keeping the delimiter
+    items = treatmentText.split(/(?=\d+\.\s+)/).filter(item => {
+      item = item.trim();
+      return item && numberedPattern.test(item);
+    });
+  } else if(hasBulletList){
+    // Split by bullet points
+    items = treatmentText.split(/(?=^[-*•]\s)/m).filter(item => item.trim());
+  } else {
+    // Try splitting by line breaks if multiple lines exist
+    const lines = treatmentText.split(/\n/).filter(line => line.trim());
+    if(lines.length > 1){
+      // Check if lines look like list items
+      const looksLikeList = lines.some(line => {
+        const trimmed = line.trim();
+        return /^\d+\.|^[-*•]|^\*\s/.test(trimmed);
+      });
+      
+      if(looksLikeList){
+        items = lines.filter(line => {
+          const trimmed = line.trim();
+          return trimmed && (/^\d+\.|^[-*•]|^\*\s/.test(trimmed));
+        });
+      }
+    }
+  }
+  
+  // If we found list items, format them
+  if(items.length > 0){
+    let listHtml = '<ul class="treatment-list">';
+    
+    items.forEach(item => {
+      item = item.trim();
+      if(!item) return;
+      
+      // Remove the number/bullet prefix (1., 2., -, *, •, etc.)
+      item = item.replace(/^\d+\.\s*/, '').replace(/^[-*•]\s*/, '').replace(/^\*\s*/, '');
+      
+      // Handle bold text (**text**) - do this before escaping HTML
+      item = item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      // Escape HTML but preserve our bold tags
+      // First escape everything
+      let escaped = escapeHtml(item);
+      // Then restore the bold tags
+      escaped = escaped.replace(/&lt;strong&gt;/g, '<strong>').replace(/&lt;\/strong&gt;/g, '</strong>');
+      
+      listHtml += `<li>${escaped}</li>`;
+    });
+    
+    listHtml += '</ul>';
+    return listHtml;
+  }
+  
+  // Fallback: return as paragraph with preserved formatting
+  let formatted = treatmentText;
+  // Convert **text** to <strong>text</strong> before escaping
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Escape HTML but preserve bold tags
+  formatted = escapeHtml(formatted);
+  formatted = formatted.replace(/&lt;strong&gt;/g, '<strong>').replace(/&lt;\/strong&gt;/g, '</strong>');
+  // Convert line breaks to <br>
+  formatted = formatted.replace(/\n/g, '<br>');
+  return `<p>${formatted}</p>`;
+}
+
+analyzeBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  // Button should be disabled if no file, but double-check
+  const f = fileInput.files[0];
+  if(!f || !f.type || !f.type.startsWith('image/') || analyzeBtn.disabled){
+    return;
+  }
+  
+  analyze();
+});
 </script>
 </body>
 </html>
