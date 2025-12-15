@@ -7,11 +7,23 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from predict import predict  # uses your existing predict(image_path) -> dict
 from predict import get_fertilizer_recommendation  # fertilizer recommendation function
-import httpx
 from typing import Optional
 from pydantic import BaseModel
+from app.database import init_db
+from app.community_api import router as community_router
+from app.weather_api import router as weather_router
+from app.auth import verify_clerk_session
 
 app = FastAPI(title="AgriVision")
+
+# Initialize database on startup
+@app.on_event("startup")
+async def startup_event():
+    init_db()
+
+# Include routers
+app.include_router(community_router)
+app.include_router(weather_router)
 
 # static & templates
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -21,46 +33,6 @@ templates = Jinja2Templates(directory="app/templates")
 CLERK_PUBLISHABLE_KEY = os.getenv("CLERK_PUBLISHABLE_KEY", "")
 CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY", "")
 CLERK_FRONTEND_API = os.getenv("CLERK_FRONTEND_API", "")
-
-async def verify_clerk_session(request: Request):
-    """Verify Clerk session from request"""
-    if not CLERK_SECRET_KEY:
-        return None  # Clerk not configured, allow access
-    
-    # Get session token from cookies or Authorization header
-    session_token = request.cookies.get("__session") or request.headers.get("Authorization", "").replace("Bearer ", "")
-    
-    if not session_token:
-        return None
-    
-    try:
-        async with httpx.AsyncClient() as client:
-            # Verify session with Clerk API
-            response = await client.get(
-                f"https://api.clerk.com/v1/sessions/{session_token}/verify",
-                headers={
-                    "Authorization": f"Bearer {CLERK_SECRET_KEY}",
-                    "Content-Type": "application/json"
-                }
-            )
-            if response.status_code == 200:
-                session_data = response.json()
-                # Get user info
-                user_id = session_data.get("user_id")
-                if user_id:
-                    user_response = await client.get(
-                        f"https://api.clerk.com/v1/users/{user_id}",
-                        headers={
-                            "Authorization": f"Bearer {CLERK_SECRET_KEY}",
-                            "Content-Type": "application/json"
-                        }
-                    )
-                    if user_response.status_code == 200:
-                        return user_response.json()
-    except Exception as e:
-        print(f"Clerk verification error: {e}")
-    
-    return None
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
