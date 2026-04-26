@@ -1,0 +1,211 @@
+{
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "disease": "Disease",
+    "weather": "Weather",
+    "market": "Mandi market",
+    "fertilizer": "Fertilizer",
+    "resources": "Resources",
+    "community": "Community",
+    "soil": "Soil scope",
+    "plants": "Plant profile",
+    "openMenu": "Open navigation menu"
+  },
+  "brand": "AgriVision",
+  "aboutLink": "About & disclaimer",
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "hi": "Hindi"
+  },
+  "login": {
+    "back": "← Back to app",
+    "title": "Sign in to AgriVision",
+    "subtitle": "Community features and profile sync use Clerk."
+  },
+  "home": {
+    "hero": {
+      "kicker": "AgriVision",
+      "title": "One workspace for plant health, weather, and inputs",
+      "subtitle": "Diagnose leaves, read field-ready weather, and tune fertilizer—all with a calm interface built for quick checks between rows.",
+      "ctaDisease": "Analyze a leaf",
+      "ctaWeather": "Open weather lens",
+      "ctaFertilizer": "Fertilizer guide"
+    },
+    "benefits": {
+      "local": "Disease checks saved locally in your browser",
+      "weather": "Weather tuned to your field or search",
+      "guidance": "Outputs are guidance—verify with local experts"
+    },
+    "coreTools": "Core tools",
+    "coreToolsHint": "Jump in where your day needs clarity first.",
+    "open": "Open",
+    "tools": {
+      "disease": {
+        "title": "Disease detection",
+        "desc": "Upload a leaf photo for EfficientNet-based diagnosis with care-oriented suggestions."
+      },
+      "weather": {
+        "title": "Weather lens",
+        "desc": "Current conditions, agronomic signals, alerts, and a 3-day outlook with GDD context."
+      },
+      "fertilizer": {
+        "title": "Fertilizer guide",
+        "desc": "Combine soil tests, crop type, moisture, and live weather for tailored recommendations."
+      }
+    },
+    "how": {
+      "title": "How it fits together",
+      "subtitle": "Each tool stands alone; combine them when you want the fuller picture for a plot or season.",
+      "step1Title": "Capture context",
+      "step1Body": "Add a leaf image, allow location, or enter soil and crop details.",
+      "step2Title": "Get insights",
+      "step2Body": "Models and weather APIs return labels, cues, and text you can act on.",
+      "step3Title": "Decide in the field",
+      "step3Body": "Cross-check with extension, labels, and your own scouting before big calls."
+    },
+    "also": {
+      "title": "Also explore",
+      "community": {
+        "title": "Community",
+        "desc": "Forum, groups, and grower knowledge."
+      },
+      "soil": {
+        "title": "Soil scope",
+        "desc": "Texture cards and field considerations."
+      },
+      "plants": {
+        "title": "Plant profiles",
+        "desc": "Quick crop reference for water, light, and pH."
+      }
+    },
+    "disclaimer": {
+      "line1": "Heads up:",
+      "line2": "AgriVision is informational—always validate high-stakes decisions with qualified support."
+    },
+    "disclaimerCta": "About & disclaimer →",
+    "workspace": {
+      "title": "Today's workspace",
+      "latest": "Latest check",
+      "latestSub": "Tomato · 94% confidence",
+      "field": "Field weather",
+      "fieldSub": "22°C · irrigation cue",
+      "npk": "N–P–K note",
+      "npkSub": "Based on loam + maize"
+    }
+  },
+  "dashboard": {
+    "loading": "Loading dashboard…",
+    "title": "Farm dashboard",
+    "subtitle": "Disease check history from this browser, simple risk cues, and charts for monitoring.",
+    "monitoring": "Location context",
+    "locationSet": "Last weather search: {{lat}}, {{lon}} (session)",
+    "locationUnset": "No saved coordinates yet — open Weather to set your field location.",
+    "checks": "Stored checks",
+    "chartLabels": "Checks by condition",
+    "chartTime": "Checks per day",
+    "empty": "No disease checks in local history yet.",
+    "goDisease": "Run a leaf check",
+    "footnote": "Risk levels are heuristic rules on your saved history, not field predictions. Always verify with scouting and experts.",
+    "risk": {
+      "title": "Watch level (heuristic)",
+      "level": {
+        "low": "Low — routine monitoring",
+        "moderate": "Moderate — review recent flags",
+        "elevated": "Elevated — consider follow-up scouting"
+      },
+      "flags": {
+        "repeatPattern": "Similar non-healthy labels appeared more than once in the last 7 days.",
+        "lowConfidence": "Some recent non-healthy results had low model confidence — rescan with a clearer leaf photo if unsure."
+      }
+    }
+  },
+  "resources": {
+    "title": "Resource management",
+    "subtitle": "Ideas to reduce water waste, schedule nutrients with weather, and trim input cost while protecting yield.",
+    "open": "Open",
+    "water": {
+      "title": "Smarter water use",
+      "body": "Pair irrigation with weather (rain ahead, ET cues) and soil moisture. Use the Weather lens for timing."
+    },
+    "fertilizer": {
+      "title": "Fertilizer scheduling",
+      "body": "Combine soil type, moisture, crop, and current temperature or humidity from the Fertilizer guide."
+    },
+    "cost": {
+      "title": "Input cost focus",
+      "body": "Track what the model flags on the dashboard and avoid repeat sprays or extra inputs without a soil or tissue check."
+    },
+    "schedule": {
+      "title": "Simple rotation to try",
+      "s1": "Monday: review weather + 3-day outlook before irrigating.",
+      "s2": "After rain: delay N top-dress until you can incorporate or as per local split schedule.",
+      "s3": "Monthly: export or screenshot dashboard history when talking to your extension agent."
+    }
+  },
+  "market": {
+    "title": "Mandi & wholesale snapshot (India)",
+    "subtitle": "We map your point to a state and district, then show wholesale-style prices or reference bands. Cross-check the mandi board, APMC notice, and official portals before you trade.",
+    "indiaOnly": "This tool is designed only for points inside India.",
+    "setLocation": "Location",
+    "searchIntro": "Search for a place in India, or use session coordinates from the",
+    "searchIntroSuffix": " page (same as Weather).",
+    "searchPlaceholder": "e.g. Dadri, Gautam Buddha Nagar or Bengaluru",
+    "search": "Search",
+    "searching": "Searching…",
+    "searchShort": "Type at least 2 characters",
+    "searchFailed": "Search failed. Try a different spelling.",
+    "noSearchHits": "No results — try a district, town, or pin code name.",
+    "ogdFixTitle": "Live government data (data.gov.in)",
+    "locationHelp": "We read latitude and longitude from the Weather page (session) or your device. Open",
+    "weatherLink": "Weather",
+    "useSaved": "Use weather location",
+    "useGps": "Update with GPS",
+    "geoWait": "Locating…",
+    "labelSaved": "Weather session coordinates",
+    "labelGps": "Device GPS (saved to session)",
+    "activeSource": "Location source",
+    "noCoords": "Set a place: use Search above, or “Use weather location” / GPS.",
+    "toastNoSaved": "No saved weather location yet",
+    "toastNoSavedHint": "Open the Weather page once so we can store lat/lon in this browser session.",
+    "geoUnsupported": "Geolocation is not available in this browser.",
+    "geoFail": "Could not read GPS. Check permissions and try again.",
+    "loading": "Fetching mandi context…",
+    "error": "Could not load market data.",
+    "region": "Region",
+    "modeLive": "Live (data.gov.in)",
+    "modeIndicative": "Indicative bands",
+    "asOf": "Snapshot: {{when}} (IST context)",
+    "ogdHint": "Live data uses data.gov.in “Variety-wise Daily Market Prices” when DATA_GOV_IN_API_KEY and DATA_GOV_IN_MANDI_RESOURCE are set in the server .env. If you see no rows, add your keys from data.gov.in, then restart the API server.",
+    "col": {
+      "commodity": "Commodity",
+      "variety": "Variety / grade",
+      "min": "Min (₹)",
+      "modal": "Modal (₹)",
+      "max": "Max (₹)",
+      "arrival": "Arrival",
+      "market": "Mandi / ref."
+    },
+    "unitNote": "Prices are shown as ₹/Quintal when the source uses wholesale units. Modal is the most traded class in the published row; min/max are the reported band.",
+    "disclaimer": "This page does not provide buy/sell advice. Commodity law, taxes, and quality deductions vary. Use Agmarknet, e-NAM, and your local APMC for enforceable terms. OGD data depends on the dataset you configure; indicative mode uses static reference ranges for UX only."
+  },
+  "chat": {
+    "title": "Farm assistant (AI)",
+    "welcome": "Ask about crop care, water timing, or where to read official scheme rules. I will keep answers short and safety-conscious.",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "thinking": "Thinking…",
+    "error": "Could not reach the assistant. Check that the API is running and try again.",
+    "signInRequired": "Sign in to use the AI assistant. This protects the service for everyone.",
+    "tokenWait": "Session is still loading. Wait a second and try again, or refresh the page.",
+    "sessionNotVerified": "The server could not verify your session token. Ensure CLERK_SECRET_KEY is in the project root .env (same secret key as in the Clerk dashboard), restart the API, and try again. If it still fails, check the API terminal for Clerk errors.",
+    "rateLimited": "Too many messages. Please wait a bit before trying again.",
+    "openFab": "Open farm assistant",
+    "closePanel": "Close"
+  }
+}
